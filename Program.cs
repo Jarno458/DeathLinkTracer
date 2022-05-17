@@ -10,16 +10,12 @@ namespace DeathLinkTracer
         {
             Console.Write("Server: ");
             var server = Console.ReadLine();
-            Console.WriteLine();
 
             Console.Write("Player: ");
             var player = Console.ReadLine();
-            Console.WriteLine();
 
             Console.Write("Game: ");
             var game = Console.ReadLine();
-            Console.WriteLine();
-
 
             var session = ArchipelagoSessionFactory.CreateSession(new Uri("ws://" + server));
             session.TryConnectAndLogin(game, player, new Version(0, 3, 0), ItemsHandlingFlags.NoItems, new[] { "IgnoreGame", "TextOnly" });
@@ -28,9 +24,10 @@ namespace DeathLinkTracer
 
             while (true)
             {
+                int slot;
                 var command = Console.ReadLine();
 
-                if (command == "failed")
+                if (command == "failed" || command == "f")
                 {
                     var failedDeathLinks = session.DataStorage["FailedDeathLinks"].To<string[]>();
                     Console.WriteLine("\"FailedDeathLinks\": [");
@@ -38,7 +35,8 @@ namespace DeathLinkTracer
                         Console.WriteLine($"\t[{i}]: {failedDeathLinks[i]},");
                     Console.WriteLine("]");
                 }
-                else if (command.StartsWith("slot ") && int.TryParse(command.Substring(5), out var slot))
+                else if ((command.StartsWith("slot ") && int.TryParse(command.Substring(5), out slot)) 
+                      || (command.StartsWith("received ") && int.TryParse(command.Substring(9), out slot)))
                 {
                     var received = session.DataStorage[$"Slot:{slot}:DeathLinkReceived"].To<string[]>();
                     Console.WriteLine($"\"Slot:{slot}:DeathLinkReceived\": [");
@@ -46,10 +44,10 @@ namespace DeathLinkTracer
                         Console.WriteLine($"[{i}]: {received[i]},");
                     Console.WriteLine("]");
                 }
-                else if (command.StartsWith("send ") && int.TryParse(command.Substring(5), out var slot2))
+                else if (command.StartsWith("send ") && int.TryParse(command.Substring(5), out slot))
                 {
-                    var send = session.DataStorage[$"Slot:{slot2}:DeathLinkSend"].To<string[]>();
-                    Console.WriteLine($"\"Slot:{slot2}:DeathLinkSend\": [");
+                    var send = session.DataStorage[$"Slot:{slot}:DeathLinkSend"].To<string[]>();
+                    Console.WriteLine($"\"Slot:{slot}:DeathLinkSend\": [");
                     for (int i = 0; i < send.Length; i++)
                         Console.WriteLine($"[{i}]: {send[i]},");
                     Console.WriteLine("]");
@@ -59,6 +57,6 @@ namespace DeathLinkTracer
             }
         }
 
-        static void PrintEnterCommand() => Console.WriteLine("Plz enter an command (f, slot #, send #)");
+        static void PrintEnterCommand() => Console.WriteLine("Plz enter an command (failed, received #, send #)");
     }
 }
