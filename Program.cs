@@ -39,18 +39,32 @@ namespace DeathLinkTracer
                       || (command.StartsWith("received ") && int.TryParse(command.Substring(9), out slot)))
                 {
                     var received = session.DataStorage[$"Slot:{slot}:DeathLinkReceived"].To<string[]>();
-                    Console.WriteLine($"\"Slot:{slot}:DeathLinkReceived\": [");
-                    for (int i = 0; i < received.Length; i++)
-                        Console.WriteLine($"[{i}]: {received[i]},");
-                    Console.WriteLine("]");
+                    if (received == null)
+                    {
+                        Console.WriteLine($"\"Slot:{slot}:DeathLinkReceived\": null");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"\"Slot:{slot}:DeathLinkReceived\": [");
+                        for (int i = 0; i < received.Length; i++)
+                            Console.WriteLine($"[{i}]: {received[i]},");
+                        Console.WriteLine("]");
+                    }
                 }
                 else if (command.StartsWith("send ") && int.TryParse(command.Substring(5), out slot))
                 {
                     var send = session.DataStorage[$"Slot:{slot}:DeathLinkSend"].To<string[]>();
-                    Console.WriteLine($"\"Slot:{slot}:DeathLinkSend\": [");
-                    for (int i = 0; i < send.Length; i++)
-                        Console.WriteLine($"[{i}]: {send[i]},");
-                    Console.WriteLine("]");
+                    if (send == null)
+                    {
+                        Console.WriteLine($"\"Slot:{slot}:DeathLinkSend\": null");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"\"Slot:{slot}:DeathLinkSend\": [");
+                        for (int i = 0; i < send.Length; i++)
+                            Console.WriteLine($"[{i}]: {send[i]},");
+                        Console.WriteLine("]");
+                    }
                 }
 
                 PrintEnterCommand();
